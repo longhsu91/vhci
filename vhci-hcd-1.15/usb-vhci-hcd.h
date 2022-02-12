@@ -94,20 +94,25 @@ struct usb_vhci_device
 
 struct usb_vhci_urb_priv
 {
-	struct urb *urb;
 	struct list_head urbp_list;
 	atomic_t status;
+	int num_urbs;
+	struct urb *urbs[0];
 };
 
 struct usb_vhci_hcd
 {
+	struct usb_hcd *hs_hcd;
+	struct usb_hcd *ss_hcd;
+
 	struct usb_vhci_port *ports;
-	u32 port_update;
+	u64 port_update;
 
 	spinlock_t lock;
+        bool disabled;
 
 	atomic_t frame_num;
-	enum usb_vhci_rh_state rh_state;
+	enum usb_vhci_rh_state rh_state[2];
 
 	// TODO: implement timer for incrementing frame_num every millisecond
 	//struct timer_list timer;
@@ -126,7 +131,8 @@ struct usb_vhci_hcd
 	// user space already knows about the cancelation state are in this list
 	struct list_head urbp_list_canceling;
 
-	u8 port_count;
+	u8 usb2_port_count;
+	u8 usb3_port_count;
 };
 
 static inline struct usb_vhci_device *pdev_to_vhcidev(struct platform_device *pdev)
@@ -166,7 +172,14 @@ static inline struct usb_hcd *vhcidev_to_usbhcd(struct usb_vhci_device *vdev)
 
 static inline struct usb_vhci_hcd *usbhcd_to_vhcihcd(struct usb_hcd *hcd)
 {
-	return (struct usb_vhci_hcd *)&hcd->hcd_priv;
+	struct usb_hcd *primary_hcd;
+
+	if (usb_hcd_is_primary_hcd(hcd))
+	        primary_hcd = hcd;
+	else
+	        primary_hcd = hcd->primary_hcd;
+
+	return (struct usb_vhci_hcd *) (primary_hcd->hcd_priv);
 }
 
 static inline struct device *usbhcd_to_dev(struct usb_hcd *hcd)

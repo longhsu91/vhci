@@ -52,6 +52,15 @@
 //#define USB_PORT_STAT_TEST          0x0800
 //#define USB_PORT_STAT_INDICATOR     0x1000
 
+/*
+ * Additions to wPortStatus bit field from USB 3.0
+ * See USB 3.0 spec Table 10-10
+ */
+#define USB_PORT_STAT_LINK_STATE        0x01e0
+#define USB_SS_PORT_STAT_POWER          0x0200
+#define USB_SS_PORT_STAT_SPEED          0x1c00
+#define USB_PORT_STAT_SPEED_5GBPS       0x0000
+
 // wPortChange bit field
 // See USB 2.0 spec Table 11-22
 #define USB_PORT_STAT_C_CONNECTION  0x0001
@@ -59,6 +68,14 @@
 #define USB_PORT_STAT_C_SUSPEND     0x0004
 #define USB_PORT_STAT_C_OVERCURRENT 0x0008
 #define USB_PORT_STAT_C_RESET       0x0010
+
+/*
+ * USB 3.0 wPortChange bit fields
+ * See USB 3.0 spec Table 10-11
+ */
+#define USB_PORT_STAT_C_BH_RESET        0x0020
+#define USB_PORT_STAT_C_LINK_STATE      0x0040
+#define USB_PORT_STAT_C_CONFIG_ERROR    0x0080
 
 #endif
 

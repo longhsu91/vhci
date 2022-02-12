@@ -20,6 +20,7 @@ PWD = $(shell pwd)
 INSTALL_DIR = $(INSTALL_PREFIX)/lib/modules/$(KVERSION)
 DEST = $(INSTALL_DIR)/kernel/$(MDIR)
 KSRC = $(KDIR)
+EXTRA_CFLAGS += -DKVERSION_VERSION=$(KVERSION_VERSION) -DKVERSION_PATCHLEVEL=$(KVERSION_PATCHLEVEL)
 
 CONF_H = conf/usb-vhci.config.h
 
@@ -32,7 +33,7 @@ DIST_FILES = AUTHORS ChangeLog COPYING INSTALL Makefile NEWS README TODO usb-vhc
 obj-m := $(OBJS)
 
 default: $(CONF_H)
-	make -C $(KDIR) SUBDIRS=$(PWD) PWD=$(PWD) BUILD_PREFIX=$(BUILD_PREFIX) KDIR=$(KDIR) KVERSION=$(KVERSION) modules
+	make -C $(KDIR) M=$(PWD) PWD=$(PWD) BUILD_PREFIX=$(BUILD_PREFIX) KDIR=$(KDIR) KVERSION=$(KVERSION) modules
 .PHONY: default
 .SUFFIXES:
 
@@ -88,7 +89,7 @@ srcdox: clean-srcdox
 $(CONF_H):
 	$(MAKE) testconfig
 
-TESTMAKE = make -C $(KDIR) SUBDIRS=$(PWD)/test PWD=$(PWD)/test BUILD_PREFIX=$(BUILD_PREFIX) KDIR=$(KDIR) KVERSION=$(KVERSION) EXTRA_CFLAGS='-Wno-unused $(EXTRA_CFLAGS) $1' modules
+TESTMAKE = make -C $(KDIR) M=$(PWD)/test PWD=$(PWD)/test BUILD_PREFIX=$(BUILD_PREFIX) KDIR=$(KDIR) KVERSION=$(KVERSION) EXTRA_CFLAGS='-Wno-unused $(EXTRA_CFLAGS) $1' modules
 
 testcc: clean-test
 	$(call TESTMAKE)

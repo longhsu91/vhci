@@ -148,3 +148,15 @@ static void dump_urb(struct urb *urb)
 		printk("\n");
 	}
 }
+
+static void dump_urbs(struct urb **urbs, int num_urbs)
+{
+	int i = 0;
+	if(!debug_output) return;
+	for(i = 0; i < num_urbs; i++)
+	{
+		struct urb *urb = urbs[i];
+		vhci_printk(KERN_DEBUG, "dump urbs[%d]:\n", i);
+		dump_urb(urb);
+	}
+}
